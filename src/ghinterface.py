@@ -1,8 +1,9 @@
 import os
 import json
 import requests
-from ghtoken import GITHUB_TOKEN
-import datetime, time
+from src.ghtoken import GITHUB_TOKEN
+import datetime
+import time
 import base64
 from multiprocessing import Pool
 
@@ -14,7 +15,7 @@ INITIAL_STARS_LIMIT = 1000000
 GITHUB_AUTH = {"Authorization": "token %s" % GITHUB_TOKEN}
 
 
-class GHInterface():
+class GHInterface:
     def __init__(self, db_path="../gh-database"):
         """
         C-tor
@@ -196,8 +197,8 @@ def get_readme_content(repo):
         time.sleep(dt)
 
         # Retry if required
-        if not 'content' in res.json():
-            return __get_readme_content(repo)
+        if 'content' not in res.json():
+            return get_readme_content(repo)
 
     if res.status_code != 200:
         print("Repository %s has no readme!" % repo['name'])

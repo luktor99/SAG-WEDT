@@ -1,6 +1,7 @@
 .idea
 resources
 __pycache__
+*.log
 
 gh-database
 src/ghtoken.py
