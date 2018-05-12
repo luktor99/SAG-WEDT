@@ -1,5 +1,4 @@
 import asyncio
-import os
 import pickle
 from functools import partial
 from gensim import corpora
@@ -28,23 +27,15 @@ def work_gen():
 
 
 async def arbiter_last_task():
-    print('arbiter: Zaczynam tworzenie słownika')
-    path = '../resources/dictionary/corpus/'
-    filenames = []
-    for (_, _, names) in os.walk(path):
-        filenames.extend(names)
-        break
-    dictionary = corpora.Dictionary()
-    for name in filenames:
-        with open(path + name, 'rb') as f:
-            docs = pickle.load(f)
-            dictionary.add_documents(docs)
-
+    print(get_actor().name + ': Zaczynam tworzenie słownika')
+    gen = nlp_utils.doc_corpus_gen('../resources/dictionary/corpus/')
+    dictionary = corpora.Dictionary(gen)
     dictionary.filter_extremes(no_below=0, no_above=0.5, keep_n=None)
     dictionary.compactify()
     dictionary.save('../resources/dictionary/dictionary.dict')
-    print('arbiter: Tworzenie słownika zakończone!')
+    print(get_actor().name + ': Tworzenie słownika zakończone!')
 
 
 if __name__ == '__main__':
-    Agency(10, work_gen=work_gen(), arbiter_last_task=arbiter_last_task)
+    Agency(10, work_gen=work_gen(),
+           arbiter_last_task=arbiter_last_task)

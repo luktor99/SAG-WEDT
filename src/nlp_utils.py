@@ -1,4 +1,6 @@
 import nltk
+import os
+import pickle
 import re
 from bs4 import BeautifulSoup
 from markdown2 import markdown
@@ -20,3 +22,21 @@ def extract_tokens_from_markdown(document):
     tokens = [st.stem(token) for token in tokens]
 
     return tokens
+
+
+def doc_corpus_gen(path):
+    gen = page_corpus_gen(path)
+    for _, page in gen:
+        for doc in page:
+            yield doc
+
+
+def page_corpus_gen(path):
+    filenames = []
+    for (_, _, names) in os.walk(path):
+        filenames.extend(names)
+        break
+    for name in filenames:
+        with open(path + name, 'rb') as f:
+            page = pickle.load(f)
+            yield name, page
