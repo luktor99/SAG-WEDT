@@ -37,7 +37,7 @@ def _assign_work(request):
     me = get_actor()
     try:
         task = next(me.extra['gen'])
-        print('Przypisuję zadanie aktorowi ' + request.caller.name)
+        print(get_actor().name + ': Przypisuję zadanie aktorowi ' + request.caller.name)
         return task
     except StopIteration:
         pass
@@ -72,7 +72,7 @@ class Agency:
 
         for i in range(10):
             actor_name = 'actor{}'.format(i)
-            print('Tworzę aktora: ' + actor_name + '...')
+            print(get_actor().name + ': Tworzę aktora ' + actor_name + '...')
 
             actor = await spawn(name=actor_name, start=partial(Agency._init_actor,
                                                                init_func=partial(self._actor_init_task),
@@ -93,7 +93,6 @@ class Agency:
     @staticmethod
     def _init_actor(_, init_func, last_job):
         init_func()
-        print('Inicjalizacja aktora ' + get_actor().name + ' zakończona!')
         ensure_future(Agency._actor_loop(last_job))
 
     @staticmethod
