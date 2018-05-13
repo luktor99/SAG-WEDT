@@ -40,3 +40,8 @@ def page_corpus_gen(path):
         with open(path + name, 'rb') as f:
             page = pickle.load(f)
             yield name, page
+
+
+def get_id_from_name(name):
+    match = re.match('^.*?([0-9]+)\..*$', name)
+    return match.group(1)
