@@ -14,6 +14,10 @@ def _mock_work_gen():
         yield partial(_mock_work, i)
 
 
+def _mock_arbiter_init_task():
+    print(str(get_actor().name) + ': Moje pierwsze zadanie')
+
+
 async def _mock_arbiter_last_task():
     print('arbiter: Wykonuję ostatnie zadanie')
     await asyncio.sleep(5)
@@ -46,12 +50,14 @@ def _assign_work(request):
 class Agency:
     def __init__(self, actors_count,
                  work_gen=_mock_work_gen(),
+                 arbiter_init_task=_mock_arbiter_init_task,
                  arbiter_last_task=_mock_arbiter_last_task,
                  actor_init_task=_mock_actor_init_task,
                  actor_last_task=_mock_actor_last_task):
 
         self._actors_count = actors_count
         self._work_gen = work_gen
+        self._arbiter_init_task = arbiter_init_task
         self._arbiter_last_task = arbiter_last_task
         self._actor_init_task = actor_init_task
         self._actor_last_task = actor_last_task
@@ -63,6 +69,7 @@ class Agency:
     def _initialize_arbiter(self):
         arbiter(cfg=Config(workers=4, timeout=120))
         arbiter().extra['gen'] = self._work_gen
+        self._arbiter_init_task()
         arbiter()._loop.call_later(1, self)
         arbiter().start()
 
@@ -70,7 +77,7 @@ class Agency:
         actors = []
         arbiter().extra['todo'] = list(range(100))
 
-        for i in range(10):
+        for i in range(self._actors_count):
             actor_name = 'actor{}'.format(i)
             print(get_actor().name + ': Tworzę aktora ' + actor_name + '...')
 
