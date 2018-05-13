@@ -25,7 +25,7 @@ def work_gen():
 
 def actor_init_task():
     print(get_actor().name + ': Wczytuję model tfidf...')
-    tfidf = corpora.Dictionary.load('../resources/tfidf/model.tfidf')
+    tfidf = models.TfidfModel.load('../resources/tfidf/model.tfidf')
     get_actor().extra['tfidf'] = tfidf
 
 
