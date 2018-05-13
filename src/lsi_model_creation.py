@@ -33,12 +33,12 @@ async def arbiter_last_task():
     print(get_actor().name + ': Tworzę model lsi')
     dictionary = corpora.Dictionary.load('../resources/dictionary/dictionary.dict')
     corpus_gen = nlp_utils.doc_corpus_gen('../resources/tfidf/corpus/')
-    lsi = models.LsiModel(corpus=corpus_gen, id2word=dictionary)
+    lsi = models.LsiModel(corpus=corpus_gen, id2word=dictionary, num_topics=500)
     lsi.save('../resources/lsi/model.lsi')
     print(get_actor().name + ': Model lsi utworzony')
 
 
 if __name__ == '__main__':
-    Agency(10, work_gen=work_gen(),
+    Agency(5, work_gen=work_gen(),
            actor_init_task=actor_init_task,
            arbiter_last_task=arbiter_last_task)
