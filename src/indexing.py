@@ -22,7 +22,7 @@ async def work(name, docs):
 
 
 def work_gen():
-    gen = nlp_utils.page_corpus_gen('../resources/tfidf/corpus/')
+    gen = nlp_utils.page_gen('../resources/tfidf/corpus/')
     for name, doc in gen:
         yield partial(work, name, doc)
 

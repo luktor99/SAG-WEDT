@@ -24,14 +24,14 @@ def extract_tokens_from_markdown(document):
     return tokens
 
 
-def doc_corpus_gen(path):
-    gen = page_corpus_gen(path)
+def doc_gen(path):
+    gen = page_gen(path)
     for _, page in gen:
         for doc in page:
             yield doc
 
 
-def page_corpus_gen(path):
+def page_gen(path):
     filenames = []
     for (_, _, names) in os.walk(path):
         filenames.extend(names)

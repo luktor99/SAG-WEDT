@@ -18,7 +18,7 @@ async def work(name, docs):
 
 
 def work_gen():
-    gen = nlp_utils.page_corpus_gen('../resources/dictionary/corpus/')
+    gen = nlp_utils.page_gen('../resources/dictionary/corpus/')
     for name, doc in gen:
         yield partial(work, name, doc)
 
@@ -32,7 +32,7 @@ def actor_init_task():
 async def arbiter_last_task():
     print(get_actor().name + ': Tworzę model tfidf')
     dictionary = corpora.Dictionary.load('../resources/dictionary/dictionary.dict')
-    corpus_gen = nlp_utils.doc_corpus_gen('../resources/bow/corpus/')
+    corpus_gen = nlp_utils.doc_gen('../resources/bow/corpus/')
     tfidf = models.TfidfModel(corpus=corpus_gen, id2word=dictionary)
     tfidf.save('../resources/tfidf/model.tfidf')
     print(get_actor().name + ': Model tfidf utworzony')

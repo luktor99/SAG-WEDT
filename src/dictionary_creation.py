@@ -28,7 +28,7 @@ def work_gen():
 
 async def arbiter_last_task():
     print(get_actor().name + ': Zaczynam tworzenie słownika')
-    gen = nlp_utils.doc_corpus_gen('../resources/dictionary/corpus/')
+    gen = nlp_utils.doc_gen('../resources/dictionary/corpus/')
     dictionary = corpora.Dictionary(gen)
     dictionary.filter_extremes(no_below=0, no_above=0.5, keep_n=None)
     dictionary.compactify()
