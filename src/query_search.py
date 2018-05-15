@@ -20,7 +20,7 @@ async def work(index, name, query):
                        'name': page[i]['name'],
                        'url': page[i]['html_url']})
     result += get_actor().extra['result']
-    result = sorted(result, key=lambda x: -x['score'])[:10]
+    result = sorted(result, key=lambda x: -x['score'])[:20]
     get_actor().extra['result'] = result
     await asyncio.sleep(0.5)
 
@@ -46,7 +46,7 @@ def arbiter_init_task():
 
 async def arbiter_last_task():
     print(get_actor().name + ': Porządkuję wyniki')
-    result = sorted(get_actor().extra['results'], key=lambda x: -x['score'])[:10]
+    result = sorted(get_actor().extra['results'], key=lambda x: -x['score'])[:20]
     print('\n\n')
     for elem in result:
         print(elem)
