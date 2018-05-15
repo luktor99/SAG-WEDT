@@ -1,10 +1,11 @@
+from src import config
 from src.ghinterface import GHInterface
 
 if __name__ == '__main__':
     gh = GHInterface()
 
-    # Download 555 top-rated repositories (if they're not already downloaded)
-    gh.download(10000)
+    # Download x top-rated repositories (if they're not already downloaded)
+    gh.download(config.top_repos_to_download)
 
     repos = gh.get_all()
     unique_names = set([r['name'] for r in repos])

@@ -3,6 +3,7 @@ import pickle
 from functools import partial
 from gensim import corpora
 from pulsar.api import get_actor
+from src import config
 from src import nlp_utils
 from src.Agency import Agency
 from src.ghinterface import GHInterface
@@ -14,9 +15,9 @@ async def work(arg, gh):
     for repo in json:
         print(get_actor().name + ': Przetwarzam ' + repo['name'])
         tokens.append(nlp_utils.extract_tokens_from_markdown(repo['readme']))
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(config.middle_task_wait)
     filename = 'corpus' + str(arg) + '.crp'
-    with open('../resources/dictionary/corpus/' + filename, 'wb') as f:
+    with open(config.tokenized_corpus_path + filename, 'wb') as f:
         pickle.dump(tokens, f)
 
 
@@ -28,14 +29,14 @@ def work_gen():
 
 async def arbiter_last_task():
     print(get_actor().name + ': Zaczynam tworzenie słownika')
-    gen = nlp_utils.doc_gen('../resources/dictionary/corpus/')
+    gen = nlp_utils.doc_gen(config.tokenized_corpus_path)
     dictionary = corpora.Dictionary(gen)
     dictionary.filter_extremes(no_below=0, no_above=0.5, keep_n=None)
     dictionary.compactify()
-    dictionary.save('../resources/dictionary/dictionary.dict')
+    dictionary.save(config.dictionary_path)
     print(get_actor().name + ': Tworzenie słownika zakończone!')
 
 
 if __name__ == '__main__':
-    Agency(10, work_gen=work_gen(),
+    Agency(config.agents_count['dict'], work_gen=work_gen(),
            arbiter_last_task=arbiter_last_task)
