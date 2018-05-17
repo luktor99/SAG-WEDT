@@ -41,7 +41,7 @@ def _assign_work(request):
     me = get_actor()
     try:
         task = next(me.extra['gen'])
-        print(get_actor().name + ': Przypisuję zadanie aktorowi ' + request.caller.name)
+        print(me.name + ': Przypisuję zadanie aktorowi ' + request.caller.name)
         return task
     except StopIteration:
         pass
@@ -75,7 +75,6 @@ class Agency:
 
     async def _arbiter_work(self):
         actors = []
-        arbiter().extra['todo'] = list(range(100))
 
         for i in range(self._actors_count):
             actor_name = 'actor{}'.format(i)
