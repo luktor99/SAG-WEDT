@@ -6,7 +6,7 @@ top_repos_to_download = 10000
 
 # Dictionary
 dictionary_dir_path = resource_path + 'dictionary/'
-dictionary_path = dictionary_dir_path + 'dictionary.dict'
+dictionary_path = dictionary_dir_path + 'dictionary.dir'
 tokenized_corpus_path = dictionary_dir_path + 'corpus/'
 bow_corpus_path = resource_path + 'bow/corpus/'
 
