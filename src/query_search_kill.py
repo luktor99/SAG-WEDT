@@ -10,6 +10,13 @@ from src.ghinterface import GHInterface
 
 
 async def work(index, name, query):
+    # Kill actor3 after 10 pages have been processed
+    if get_actor().name == 'actor3':
+        get_actor().extra['work_counter'] += 1
+        if get_actor().extra['work_counter'] >= 10:
+            print("\t\tZabijam actor3!!!!!")
+            get_actor().stop(exit_code=0)
+
     print(get_actor().name + ': Przetwarzam plik ' + name)
     page_id = int(nlp_utils.get_id_from_name(name))
     page = get_actor().extra['gh'].get_page(page_id)
@@ -53,23 +60,18 @@ async def arbiter_last_task():
         print(elem)
     print('\n\n')
     with open(config.search_result_path, 'wb') as f:
-        print(result)
         pickle.dump(result, f)
     print(get_actor().name + ': Wyniki zapisano do ' + config.search_result_path)
 
 
 def actor_init_task():
     if get_actor().name == 'actor3':
-        print("\t\t[Init_task]: Zabijam actor3!!!!!")
-        get_actor().kill()
+        get_actor().extra['work_counter'] = 0
     get_actor().extra['gh'] = GHInterface()
     get_actor().extra['result'] = []
 
 
 async def actor_last_task():
-    if get_actor().name == 'actor3':
-        print("\t[Last_task]: Zabijam actor3!!!!!")
-        get_actor().kill()
     print(get_actor().name + ': Przesyłam wyniki')
     result = get_actor().extra['result']
     await send(get_actor().monitor, 'save_partial_result', result)
