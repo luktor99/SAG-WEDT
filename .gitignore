@@ -5,3 +5,7 @@ __pycache__
 
 gh-database
 src/ghtoken.py
+
+doc/*.aux
+doc/*.out
+doc/*.synctex.gz
