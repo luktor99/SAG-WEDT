@@ -1,0 +1,86 @@
+\documentclass[12pt, oneside, final]{report}
+\usepackage{geometry}
+\geometry{a4paper, left=20mm, right=20mm, top=25mm, bottom=25mm}
+\usepackage[utf8]{inputenc}
+\usepackage{t1enc}
+\usepackage[MeX]{polski}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{indentfirst}
+\usepackage{pdfpages}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{placeins} % provides \FloatBarrier
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes,arrows,calc,decorations.markings,shadows}
+\usepackage[hidelinks]{hyperref}
+
+% Czcionka
+\usepackage{charter}
+
+% Pojedyncze elementy na górze stron
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+
+% Styl tytułowania rozdziałów:
+\usepackage{titlesec}
+%\titleformat{\chapter}{\normalfont\huge}{\bf\thechapter.}{20pt}{\huge\bf}
+% Styl tytułowania rozdziałów:
+\titleformat{\chapter}[display] 
+{\centering\normalfont\huge\bfseries}{\centering\chaptertitlename\ \thechapter.}{0.5em}{}
+\titlespacing{\chapter}{0em}{0em}{2em}
+
+% dodatkowe kropki po numerach rozdziałów, sekcji itd
+\usepackage{titlesec}
+\titlelabel{\thetitle.\quad}
+
+% Dodatkowe odstępy w tabelach
+\usepackage{array}
+\setlength\extrarowheight{4pt}
+
+% Wyłączone wcięcia
+\usepackage{parskip}
+
+\begin{document}
+% Title page
+\begin{titlepage}
+	\centering
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.9\textwidth]{logo.pdf}
+	\end{figure}
+	\vspace*{60pt}
+	\Large{Systemy agentowe}\\
+	\Large{Wstęp do eksploracji danych tekstowych w sieci WWW}\\
+	\vspace{60pt}
+	\textsc{\Huge{System przeszukiwania projektów open source na podstawie danych z repozytoriów kodu}}\\
+	\vspace{20pt}
+	\large{Sprawozdanie z projektu}\\
+	\vspace{120pt}
+	\Large{Paweł Karwacki \textit{259820}}\\
+	\Large{Maciej Krasowski \textit{259831}}\\
+	\Large{Łukasz Kilaszewski \textit{259822}}\\
+	\vfill
+	\large{28 maja 2018}
+\end{titlepage}
+
+\thispagestyle{empty}
+%\tableofcontents
+%\cleardoublepage
+
+\section*{Wstęp}
+Podstawowym założeniem projektu było przygotowanie systemu agentowego, który będzie w stanie przeszukiwać projekty open source. Po podaniu wyszukiwanej frazy, system miał zwracać listę najbardziej dopasowanych projektów wraz z odnośnikami prowadzącymi do repozytoriów.
+
+Kod źródłowy przygotowanego rozwiązania dostępny jest pod adresem \url{https://github.com/luktor99/SAG-WEDT}.
+
+\section*{Dane do przeszukiwania}
+Jako źródło danych do przeszukiwania wybraliśmy platformę GitHub, głównie ze względu na ilość zgromadzonych tam publicznych repozytoriów oraz dostępność darmowego interfejsu API. Niestety interfejs ten posiada ograniczenie w postaci limitu 5000 zapytań na godzinę. Ponadto, pobieranie repozytoriów w czasie rzeczywistym wiąże się z dużym spowolnieniem działania systemu ze względu na opóźnienia generowane przez liczne zapytania HTTP.
+
+Biorąc pod uwagę powyższe niedogodności, zdecydowaliśmy się na wcześniejsze pobranie pewnej puli repozytoriów. Dzięki temu właściwa aplikacja może uzyskiwać dostęp do wielu repozytoriów z minimalnymi opóźnieniami. Aby wybrać najbardziej interesujące repozytoria, pobieranie obejmuje te o największej ilości "gwiazdek", czyli najbardziej wartościowe z punktu widzenia społeczności serwisu GitHub. Dane składowane są w folderze projektu w folderze \texttt{gh-database}. Za pobieranie oraz dostęp do zapisanych repozytoriów odpowiada klasa \texttt{GHInterface}, której implementacja znajduje się w pliku \texttt{src/ghinterface.py}.
+
+Ilość pobranych repozytoriów może być ustawiana za pomocą parametru \texttt{top\_repos\_to\_down\-load} w pliku \texttt{src/config.py}. Domyślnie wynosi ona 10000.
+
+\end{document}
