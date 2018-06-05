@@ -10,12 +10,27 @@
 \usepackage{mathtools}
 \usepackage{indentfirst}
 \usepackage{pdfpages}
-\usepackage{xcolor}
+\usepackage{listings, xcolor}
 \usepackage{colortbl}
 \usepackage{placeins} % provides \FloatBarrier
 \usepackage{tikz}
+\usepackage{minted}
+\usepackage{lscape}
 \usetikzlibrary{positioning,shapes,arrows,calc,decorations.markings,shadows}
 \usepackage[hidelinks]{hyperref}
+
+%listing kodu
+\lstset{
+	mathescape,
+               numbersep=5pt,
+               frame=lines,
+               framesep=2mm,
+               breaklines,
+    string=[s]{"}{"},
+    stringstyle=\color{blue},
+    comment=[l]{:},
+    commentstyle=\color{black},
+}
 
 % Czcionka
 \usepackage{charter}
@@ -29,7 +44,7 @@
 \usepackage{titlesec}
 %\titleformat{\chapter}{\normalfont\huge}{\bf\thechapter.}{20pt}{\huge\bf}
 % Styl tytułowania rozdziałów:
-\titleformat{\chapter}[display] 
+\titleformat{\chapter}[display]
 {\centering\normalfont\huge\bfseries}{\centering\chaptertitlename\ \thechapter.}{0.5em}{}
 \titlespacing{\chapter}{0em}{0em}{2em}
 
@@ -100,10 +115,89 @@ Przygotowanie ściągniętych wcześniej informacji o repozytoriach do przeszuki
 Szczególnie interesujący był punkt pierwszy, bowiem właściwa tokenizacja okazała się bardziej problematyczna, niż można było się tego spodziewać. Po pierwsze należało przekonwertować format markdown (typowy dla plików readme) do czystego tekstu. W pierwotnej wersji później następowała tokenizacja, filtracja, stemming i usunięcie \textit{stop words}. Pierwsze wyniki wyszukiwania pokazały jednak, że chińskie repozytoria psują jakość wyszukiwania. Aby poradzić sobie z tym problemem usunięto wszystkie te repozytoria, dla których liczba słów zawierających znaki nietypowe przekracza 5\%.
 
 \section*{Dopasowywanie dokumentów do zapytania}
+Na początku użytkownik proszony jest o wpisanie zapytania. Następnie arbiter przekształca zapytanie do przestrzeni LSI oraz zaczyna tworzenie poszczególnych agentów z wykorzystaniem klasy \texttt{Agency},  następnie rozdziela pracę pomiędzy agentami.
+Każdy z tworzonych agentów przetwarza przydzielone pliki i dopasowuje zaindeksowane w nich readme do przekazanego zapytania. Dokonuje też na bieżąco sortowania wszystkich dotychczas uzyskanych przez siebie wyników.
+\\
+Po przetworzeniu wszystkich dokumentów wszystkie agenty są proszone o przesłanie wyników swojej pracy. Na koniec arbiter dokonuje sortowania wyników i przedstawia 20 najlepszych rozwiązań (ten parametr można zmienić w pliku konfiguracyjnym \texttt{src/config.py}).
 
-\section*{Przykładowe wyniki działania systemu}
-Po uruchomieniu aplikacji użytkownik proszony jest o wpisanie szukanej frazy. W trakcie działania system wyświetla w postaci logów informacje diagnostyczne informujące co aktualnie jest wykonywane i przez którego agenta. W przypadku, gdy jakiś agent zostanie awaryjnie zatrzymany zostanie wyświetlona odpowiednia informacja. W takim przypadku (zgodnie z założeniami) część pracy wykonanej przez tego agenta zostanie stracona. Ze względu jednak na prawdopodobieństwo takiego zdarzenia oraz znaczne rozproszenie pracy w trakcie eksperymentów nie zaobserwowano drastycznego pogorszenia się wyników działania systemu. Rezultat wyszukiwania pokazywany jest także w postaci logów, które są uporządkowane malejąco względem dopasowania frazy do pliku readme.
+\section*{Wyniki działania systemu}
+Po uruchomieniu aplikacji użytkownik proszony jest o wpisanie szukanej frazy (np. \texttt{tensorflow}) - przykłady wyników działania systemu dla tego zapytania znajdują się w załącznikach na końcu sprawozdania. W trakcie działania system wyświetla w postaci logów informacje diagnostyczne informujące co aktualnie jest wykonywane i przez którego agenta. W przypadku, gdy jakiś agent zostanie awaryjnie zatrzymany zostanie wyświetlona odpowiednia informacja. W takim przypadku (zgodnie z założeniami) część pracy wykonanej przez tego agenta zostanie stracona. Ze względu jednak na prawdopodobieństwo takiego zdarzenia oraz znaczne rozproszenie pracy w trakcie eksperymentów nie zaobserwowano drastycznego pogorszenia się wyników działania systemu. Rezultat wyszukiwania pokazywany jest także w postaci logów, które są uporządkowane malejąco względem dopasowania frazy do pliku readme.
 
 \section*{Wnioski}
+Jak pokazano w załączonych na końcu sprawozdania logach aplikacyjnych system jest odporny na zabicie jednego z agentów. Jest to immanentna cecha dobrych systemów agentowych. Dzięki temu, że dane są rozproszone i każdy z agentów ma pewną autonomię zadanie jest wykonywalne w sposób bezpieczniejszy oraz potencjalnie szybszy. Struktura większości modułów systemu (od przygotowywania modeli języków do samego przeszukiwania repozytoriów) jest bardzo podobna. Ten fakt został wykorzystany i stworzono generyczną klasę \texttt{Agency}, która dzięki zadaniu odpowiednich parametrów była dopasowywana do wykonywania określonego zadania.
+\\
+Dostosowanie biblioteki Pulsar do tego zadania nastręczyło sporo trudności. Wynika to z faktu, że nie służy ona bezpośrednio do tworzenia systemów agentowych, a wykorzystuje te mechanizmy. Kolejną przyczyną jest słaba dokumentacja, która dostępna jest w wielu wersjach (nie wszystkie są aktualne) oraz posiada zaledwie kilka bardzo prostych przykładów komunikacji między agentami.
+
+\begin{landscape}
+Przykład 1: Wyniki wyszukiwania frazy \texttt{tensorflow} (wszystkie agenty prawidłowo zakończyły działanie):
+
+\begin{minted}[mathescape,
+               linenos,
+               numbersep=5pt,
+               %frame=lines,
+               framesep=3mm,
+               xleftmargin=21pt,
+               breaklines,
+               fontsize=\footnotesize]{js}
+
+{'name': 'jtoy/awesome-tensorflow', 'url': 'https://github.com/jtoy/awesome-tensorflow', 'score': 0.91692072}
+
+{'name': 'tensorflow/skflow', 'url': 'https://github.com/tensorflow/skflow', 'score': 0.88495779}
+
+{'name': 'deepmind/sonnet', 'url': 'https://github.com/deepmind/sonnet', 'score': 0.88260406}
+{'name': 'tensorflow/tensorflow', 'url': 'https://github.com/tensorflow/tensorflow', 'score': 0.87205422}
+{'name': 'astorfi/TensorFlow-World', 'url': 'https://github.com/astorfi/TensorFlow-World', 'score': 0.8399685}
+{'name': 'tensorflow/models', 'url': 'https://github.com/tensorflow/models', 'score': 0.8325097}
+{'name': 'nfmcclure/tensorflow_cookbook', 'url': 'https://github.com/nfmcclure/tensorflow_cookbook', 'score': 0.76908624}
+{'name': 'tensorflow/fold', 'url': 'https://github.com/tensorflow/fold', 'score': 0.76521885}
+{'name': 'tflearn/tflearn', 'url': 'https://github.com/tflearn/tflearn', 'score': 0.75520557}
+{'name': 'yahoo/TensorFlowOnSpark', 'url': 'https://github.com/yahoo/TensorFlowOnSpark', 'score': 0.74378902}
+{'name': 'tensorflow/serving', 'url': 'https://github.com/tensorflow/serving', 'score': 0.72587609}
+{'name': 'samjabrahams/tensorflow-on-raspberry-pi', 'url': 'https://github.com/samjabrahams/tensorflow-on-raspberry-pi', 'score': 0.72068191}
+{'name': 'tensorflow/swift', 'url': 'https://github.com/tensorflow/swift', 'score': 0.7169168}
+{'name': 'vahidk/EffectiveTensorflow', 'url': 'https://github.com/vahidk/EffectiveTensorflow', 'score': 0.69827163}
+{'name': 'leriomaggio/deep-learning-keras-tensorflow', 'url': 'https://github.com/leriomaggio/deep-learning-keras-tensorflow', 'score': 0.69624388}
+{'name': 'pkmital/tensorflow_tutorials', 'url': 'https://github.com/pkmital/tensorflow_tutorials', 'score': 0.65139794}
+{'name': 'chiphuyen/stanford-tensorflow-tutorials', 'url': 'https://github.com/chiphuyen/stanford-tensorflow-tutorials', 'score': 0.63101554}
+{'name': 'aymericdamien/TensorFlow-Examples', 'url': 'https://github.com/aymericdamien/TensorFlow-Examples', 'score': 0.62967598}
+{'name': 'jostmey/NakedTensor', 'url': 'https://github.com/jostmey/NakedTensor', 'score': 0.6064766}
+{'name': 'CreatCodeBuild/TensorFlow-and-DeepLearning-Tutorial', 'url': 'https://github.com/CreatCodeBuild/TensorFlow-and-DeepLearning-Tutorial', 'score': 0.60384893}
+
+\end{minted}
+\end{landscape}
+
+\begin{landscape}
+Przykład 2: Wyniki wyszukiwania frazy \texttt{tensorflow} (jeden z agentów został awaryjnie zatrzymany w trakcie działania systemu):
+\begin{minted}[mathescape,
+               linenos,
+               numbersep=5pt,
+               %frame=lines,
+               framesep=3mm,
+               xleftmargin=21pt,
+               breaklines,
+               fontsize=\footnotesize]{js}
+{'name': 'jtoy/awesome-tensorflow', 'url': 'https://github.com/jtoy/awesome-tensorflow', 'score': 0.91692072}
+{'name': 'tensorflow/skflow', 'url': 'https://github.com/tensorflow/skflow', 'score': 0.88495779}
+{'name': 'deepmind/sonnet', 'url': 'https://github.com/deepmind/sonnet', 'score': 0.88260406}
+{'name': 'tensorflow/tensorflow', 'url': 'https://github.com/tensorflow/tensorflow', 'score': 0.87205422}
+{'name': 'astorfi/TensorFlow-World', 'url': 'https://github.com/astorfi/TensorFlow-World', 'score': 0.8399685}
+{'name': 'tensorflow/models', 'url': 'https://github.com/tensorflow/models', 'score': 0.8325097}
+{'name': 'nfmcclure/tensorflow_cookbook', 'url': 'https://github.com/nfmcclure/tensorflow_cookbook', 'score': 0.76908624}
+{'name': 'tensorflow/fold', 'url': 'https://github.com/tensorflow/fold', 'score': 0.76521885}
+{'name': 'tflearn/tflearn', 'url': 'https://github.com/tflearn/tflearn', 'score': 0.75520557}
+{'name': 'tensorflow/serving', 'url': 'https://github.com/tensorflow/serving', 'score': 0.72587609}
+{'name': 'samjabrahams/tensorflow-on-raspberry-pi', 'url': 'https://github.com/samjabrahams/tensorflow-on-raspberry-pi', 'score': 0.72068191}
+{'name': 'tensorflow/swift', 'url': 'https://github.com/tensorflow/swift', 'score': 0.7169168}
+{'name': 'vahidk/EffectiveTensorflow', 'url': 'https://github.com/vahidk/EffectiveTensorflow', 'score': 0.69827163}
+{'name': 'leriomaggio/deep-learning-keras-tensorflow', 'url': 'https://github.com/leriomaggio/deep-learning-keras-tensorflow', 'score': 0.69624388}
+{'name': 'pkmital/tensorflow_tutorials', 'url': 'https://github.com/pkmital/tensorflow_tutorials', 'score': 0.65139794}
+{'name': 'chiphuyen/stanford-tensorflow-tutorials', 'url': 'https://github.com/chiphuyen/stanford-tensorflow-tutorials', 'score': 0.63101554}
+{'name': 'aymericdamien/TensorFlow-Examples', 'url': 'https://github.com/aymericdamien/TensorFlow-Examples', 'score': 0.62967598}
+{'name': 'jostmey/NakedTensor', 'url': 'https://github.com/jostmey/NakedTensor', 'score': 0.6064766}
+{'name': 'CreatCodeBuild/TensorFlow-and-DeepLearning-Tutorial', 'url': 'https://github.com/CreatCodeBuild/TensorFlow-and-DeepLearning-Tutorial', 'score': 0.60384893}
+{'name': 'ethereon/caffe-tensorflow', 'url': 'https://github.com/ethereon/caffe-tensorflow', 'score': 0.5912745}
+
+\end{minted}
+\end{landscape}
 
 \end{document}
